@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Manajemen Device & Settings</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <img src="img/logo.png" alt="Logo" class="logo" />
+      <h1>Halaman Admin</h1>
+    </div>
+    <nav>
+      <a class="btn" href="index.html">Kembali ke Dashboard</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card blue">
+      <h2>Manajemen Ruangan</h2>
+      <div class="kv">
+        <span>Tambah / Ubah Ruangan</span>
+        <strong>
+          <input type="text" id="roomKey" placeholder="key (mis. pelayanan)" />
+          <input type="text" id="roomName" placeholder="Nama (mis. Ruang Pelayanan)" />
+          <button class="btn" id="saveRoom">Simpan</button>
+        </strong>
+      </div>
+      <div class="list" id="roomsList"></div>
+    </section>
+
+    <section class="card green">
+      <h2>Manajemen Device</h2>
+      <div class="kv">
+        <span>Tambah / Ubah Device</span>
+        <strong>
+          <input type="text" id="deviceKey" placeholder="key (mis. aula_light)" />
+          <input type="text" id="deviceName" placeholder="Nama (mis. Lampu Aula)" />
+          <input type="text" id="deviceRoom" placeholder="room_key (mis. aula)" />
+          <select id="deviceType">
+            <option value="light">light</option>
+            <option value="fan">fan</option>
+            <option value="ac">ac</option>
+            <option value="pump">pump</option>
+            <option value="street">street</option>
+            <option value="other">other</option>
+          </select>
+          <button class="btn" id="saveDevice">Simpan</button>
+        </strong>
+      </div>
+      <div class="list" id="devicesList"></div>
+    </section>
+
+    <section class="card amber">
+      <h2>Pengaturan Aplikasi & Parameter IoT</h2>
+      <div class="kv"><span>Mode Simulasi</span><strong>
+        <select id="setSimulate">
+          <option value="false">OFF</option>
+          <option value="true">ON</option>
+        </select>
+      </strong></div>
+      <div class="kv"><span>Server-Sent Events</span><strong>
+        <select id="setSseEnabled">
+          <option value="false">OFF</option>
+          <option value="true">ON</option>
+        </select>
+      </strong></div>
+      <div class="kv"><span>Poll Interval</span><strong>
+        <input type="number" id="setPollInterval" min="5000" step="1000" placeholder="ms (contoh 30000)" />
+      </strong></div>
+      <div class="kv"><span>Ambang LDR rendah</span><strong>
+        <input type="number" id="setLightLuxDim" min="0" step="1" placeholder="lx (contoh 100)" />
+      </strong></div>
+      <div class="kv"><span>Ambang Suhu Kipas Aula</span><strong>
+        <input type="number" id="setAulaTempForFan" min="0" step="1" placeholder="°C (contoh 29)" />
+      </strong></div>
+      <div class="kv"><span>Ambang Suhu AC Aula</span><strong>
+        <input type="number" id="setAulaTempForAC" min="0" step="1" placeholder="°C (contoh 31)" />
+      </strong></div>
+      <div class="kv"><span>Ambang Suhu Max Server</span><strong>
+        <input type="number" id="setServerTempMax" min="0" step="1" placeholder="°C (contoh 34)" />
+      </strong></div>
+      <div class="kv"><span>Min Persentase Tandon</span><strong>
+        <input type="number" id="setTandonMinPercent" min="0" max="100" step="1" placeholder="% (contoh 25)" />
+      </strong></div>
+      <div class="kv"><span></span><strong>
+        <button class="btn" id="saveSettings">Simpan Pengaturan</button>
+      </strong></div>
+      <div class="hint">Pengaturan ini disimpan ke database dan akan menimpa nilai default dari <code>js/config.js</code>.</div>
+    </section>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

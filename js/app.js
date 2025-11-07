@@ -77,6 +77,27 @@
   // Build room cards
   const roomCards = new Map();
   const cardColors = ['blue','sky','green','amber','red','violet'];
+  // Before building UI, merge runtime settings overrides from backend if available
+  // We fetch settings synchronously-like via Promise; if fails, continue with defaults
+  let settingsFetched = false;
+  try {
+    // Use synchronous fetch via XHR is not ideal; keep async but non-blocking for UI
+    fetch('api/admin_settings.php').then(r=>r.json()).then(json=>{
+      if (json && json.ok && json.settings) {
+        const s = json.settings;
+        if (typeof s.simulate === 'boolean') APP_CONFIG.simulate = s.simulate;
+        if (typeof s.sseEnabled === 'boolean') APP_CONFIG.sseEnabled = s.sseEnabled;
+        if (typeof s.pollIntervalMs === 'number') APP_CONFIG.pollIntervalMs = s.pollIntervalMs;
+        if (s.thresholds) {
+          APP_CONFIG.thresholds = Object.assign({}, APP_CONFIG.thresholds, s.thresholds);
+        }
+        settingsFetched = true;
+        // update simulate toggle label if present
+        if (simulateToggle) simulateToggle.textContent = `Simulasi: ${APP_CONFIG.simulate ? 'ON' : 'OFF'}`;
+      }
+    }).catch(()=>{});
+  } catch (e) { /* ignore */ }
+
   APP_CONFIG.rooms.forEach(({ key, name }, i) => {
     const card = document.createElement('div');
     card.className = 'card';
@@ -110,12 +131,12 @@
     } else if (key === 'aula') {
       card.innerHTML = `
         <div class="service-header">
-          <h3>Ruang Rapat — Kehadiran Tamu</h3>
+          <h3>Ruang Rapat - Kegiatan Kantor</h3>
         </div>
-        <div class="kv"><span>Status</span><strong><span id="rapatIndicator" class="indicator off"></span><span id="rapatArrivalStatus">Tidak ada</span></strong></div>
+        <div class="kv"><span>Status</span><strong><span id="rapatIndicator" class="indicator off"></span><span id="rapatArrivalStatus">Tidak ada kegiatan</span></strong></div>
         <div class="kv"><span>Terakhir Terdeteksi</span><strong id="rapatLastArrival">-</strong></div>
         <div class="arrival-log">
-          <div class="log-title">Log Kedatangan (terbaru)</div>
+          <div class="log-title">Log Kegiatan</div>
           <ul id="rapatArrivalLog"></ul>
         </div>
         <div class="service-watermark" aria-hidden="true">
@@ -294,7 +315,7 @@
       labels: sixHourLabels,
       datasets: [
         { label: 'Voltase (V)', data: [null,null,null,null], borderColor: '#8B5CF6', borderWidth: 2, tension: 0.25, pointRadius: 0, fill: false },
-        { label: 'Daya (W)', data: [null,null,null,null], borderColor: '#22C55E', borderWidth: 2, tension: 0.25, pointRadius: 0, fill: false },
+        { label: 'Daya (W)', data: [null,null,null,null], borderColor: '#0EA5E9', borderWidth: 2, tension: 0.25, pointRadius: 0, fill: false },
         { label: 'Rata-rata Daya (W)', data: [null,null,null,null], borderColor: '#F59E0B', borderDash: [6,4], borderWidth: 2, tension: 0.25, pointRadius: 0, fill: false }
       ]
     },
@@ -466,7 +487,7 @@
       const rapat = data.latestByRoom?.['aula'];
       const occRapat = typeof rapat?.occupancy === 'number' ? rapat.occupancy : lastRapatOcc;
       if (rapatArrivalStatus) {
-        rapatArrivalStatus.textContent = occRapat ? 'Ada tamu' : 'Tidak ada';
+        rapatArrivalStatus.textContent = occRapat ? 'Ada kegiatan/rapat' : 'Tidak ada kegiatan';
       }
       if (rapatIndicator) {
         rapatIndicator.classList.toggle('on', !!occRapat);
