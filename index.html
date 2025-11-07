@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IoT Kantor Kalurahan Pondokrejo</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="img/logo.png" alt="Logo Kalurahan Pondokrejo" class="brand-logo" />
+      <div class="brand-text">
+        <h1 class="brand-title">IoT Kantor Kalurahan Pondokrejo</h1>
+        <div class="brand-subtitle">Sleman - Yogyakarta</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="connectionStatus" class="badge">Disconnected</span>
+      <button id="simulateToggle" class="btn">Simulasi: ON</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Smart Office & Efisiensi Energi</h2>
+      <div id="roomsGrid" class="grid"></div>
+    </section>
+
+    <section>
+      <h2>Dashboard Energi</h2>
+      <div class="charts-row">
+        <div class="card chart-card blue">
+          <div class="service-header">
+            <h3>KWh Bulanan (6 bulan)</h3>
+          </div>
+          <canvas id="monthlyKwhChart"></canvas>
+          <div class="service-watermark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" class="service-svg">
+              <!-- Ikon bar chart sederhana -->
+              <rect x="14" y="32" width="8" height="16" rx="2"></rect>
+              <rect x="28" y="24" width="8" height="24" rx="2"></rect>
+              <rect x="42" y="18" width="8" height="30" rx="2"></rect>
+              <line x1="12" y1="50" x2="54" y2="50"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="card chart-card blue">
+          <div class="service-header">
+            <h3>Realtime Energi per Jam</h3>
+          </div>
+          <canvas id="realtimeEnergyChart"></canvas>
+          <div class="service-watermark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" class="service-svg">
+              <!-- Ikon line chart sederhana -->
+              <polyline points="12,44 22,34 32,40 42,22 52,28" />
+              <line x1="12" y1="50" x2="54" y2="50"></line>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="card mini-card blue">
+          <div class="service-header"><h3>Total Daya</h3></div>
+          <div class="kv"><span>Sekarang</span><strong id="totalPower">0 W</strong></div>
+        </div>
+        <div class="card mini-card blue">
+          <div class="service-header"><h3>Rata-rata Suhu</h3></div>
+          <div class="kv"><span>Rata-rata</span><strong id="avgTemp">- °C</strong></div>
+        </div>
+        <div class="card mini-card blue">
+          <div class="service-header"><h3>Okupansi Aktif</h3></div>
+          <div class="kv"><span>Aktif</span><strong id="activeOccupancy">0 ruang</strong></div>
+        </div>
+        <div class="card mini-card blue">
+          <div class="service-header"><h3>Jumlah Tamu Datang</h3></div>
+          <div class="kv"><span>Hari Ini</span><strong id="arrivalCount">0</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Pemantauan Aset & Utilitas Desa</h2>
+      <div class="grid" id="assetsGrid">
+        <!-- Tandon dan Lampu Jalan -->
+        <div class="card">
+          <h3>Tandon Air Desa</h3>
+          <div class="kv"><span>Level Air</span><strong id="waterLevel">- %</strong></div>
+          <div class="kv"><span>Debit Air</span><strong id="waterFlow">- L/min</strong></div>
+          <div class="actions">
+            <button class="btn" data-device-key="pamsimas_pump" data-action="toggle">Pompa: OFF</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Penerangan Jalan</h3>
+          <div class="kv"><span>Status</span><strong id="streetLightStatus">-</strong></div>
+          <div class="actions">
+            <button class="btn" data-device-key="street_main" data-action="toggle">Lampu Jalan: OFF</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Layanan & Transparansi Publik</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Sistem Antrean</h3>
+          <div class="kv"><span>No. Antrean Saat Ini</span><strong id="queueNumber">0</strong></div>
+          <div class="actions">
+            <button class="btn" id="queueNext">Ambil Nomor</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Umpan Balik Layanan</h3>
+          <div class="actions">
+            <button class="btn feedback" data-score="3">Sangat Puas</button>
+            <button class="btn feedback" data-score="2">Puas</button>
+            <button class="btn feedback" data-score="1">Kurang Puas</button>
+          </div>
+          <div class="kv"><span>Skor Hari Ini</span><strong id="feedbackScore">-</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Keamanan & Pemantauan Lingkungan</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Ruang Arsip / Server</h3>
+          <div class="kv"><span>Pintu</span><strong id="doorStatus">Tertutup</strong></div>
+          <div class="kv"><span>Asap/Api</span><strong id="smokeStatus">Normal</strong></div>
+          <div class="kv"><span>Suhu</span><strong id="serverTemp">- °C</strong></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <small>Desa Cerdas • Demo IoT berbasis ESP32 & Web</small>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/sse.js"></script>
+  <script src="js/simulator.js"></script>
+</body>
+ 
+</html>

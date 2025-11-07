@@ -1,0 +1,108 @@
+/* Light, clean, no‑gradient theme */
+:root{
+  --bg:#F6F7FB;
+  --surface:#FFFFFF;
+  --text-primary:#0F172A; /* slate-900 */
+  --text-secondary:#475569; /* slate-600 */
+  --accent-primary:#2563EB; /* blue-600 */
+  --accent-primary-hover:#1D4ED8; /* blue-700 */
+  --accent-secondary:#0EA5E9; /* sky-500 */
+  --border:#E2E8F0; /* slate-200 */
+  --shadow-soft:0 8px 24px rgba(15,23,42,0.08);
+  --radius:14px;
+  --radius-btn:12px;
+}
+
+/* Typography & base */
+html,body{font-family:'Nunito',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text-primary)}
+h1{font-size:2.25rem;font-weight:700}
+h2{font-size:1.875rem;font-weight:700;margin:18px 0}
+h3{font-size:1.25rem;font-weight:700}
+
+/* Topbar */
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:var(--surface);color:var(--text-primary);border-bottom:1px solid var(--border);box-shadow:0 6px 12px rgba(15,23,42,0.04)}
+.top-actions{display:flex;gap:10px;align-items:center}
+
+/* Brand headline */
+.brand{display:flex;align-items:stretch;gap:12px}
+.brand-logo{height:100%;max-height:64px;width:auto;object-fit:contain}
+.brand-text{display:flex;flex-direction:column;justify-content:center}
+.brand-title{margin:0;font-size:1.35rem;line-height:1.25;font-weight:700;color:var(--text-primary)}
+.brand-subtitle{margin-top:2px;font-size:.95rem;line-height:1.25;color:var(--text-secondary)}
+
+/* Layout */
+.container{padding:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+
+/* Card */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-soft)}
+.card{position:relative;overflow:hidden}
+.card:hover{transform:translateY(-2px);transition:transform .2s ease}
+.kv{display:flex;justify-content:space-between;margin:8px 0;color:var(--text-secondary)}
+
+/* Arrival log for Ruang Pelayanan */
+.arrival-log{margin-top:10px}
+.arrival-log .log-title{font-size:.9rem;color:var(--text-secondary);margin-bottom:6px}
+#pelayananArrivalLog{list-style:none;padding:0;margin:0}
+#pelayananArrivalLog li{font-size:.95rem;color:var(--text-primary);padding:4px 0;border-top:1px dashed var(--border)}
+
+/* Small status indicator (optional use) */
+.indicator{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;background:#94A3B8}
+.indicator.on{background:#22C55E}
+.indicator.off{background:#94A3B8}
+
+/* Card color variants (no gradient) */
+.card.blue{background:#EBF2FF;border-color:#C7D8FE}
+.card.sky{background:#E0F2FE;border-color:#B9E6FD}
+.card.green{background:#ECFDF5;border-color:#CFFAE8}
+.card.amber{background:#FEF3C7;border-color:#FDE68A}
+.card.red{background:#FEE2E2;border-color:#FCA5A5}
+.card.violet{background:#F3E8FF;border-color:#D8B4FE}
+.card.blue:hover{border-color:#9EC0FD}
+.card.sky:hover{border-color:#94DAFB}
+.card.green:hover{border-color:#B6F5DF}
+.card.amber:hover{border-color:#FCD34D}
+.card.red:hover{border-color:#F87171}
+.card.violet:hover{border-color:#C4A0FB}
+
+/* Buttons (outline, ringan & kontras) */
+.btn{background:#fff;color:var(--accent-primary);border:1px solid var(--accent-primary);border-radius:var(--radius-btn);padding:9px 18px;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease,color .15s ease;text-transform:initial;font-weight:600;letter-spacing:.2px}
+.btn:hover{transform:translateY(-1px);background:#EEF2FF;border-color:var(--accent-primary-hover);color:var(--accent-primary-hover);box-shadow:0 8px 16px rgba(37,99,235,.18)}
+.btn:active{transform:translateY(0) scale(.99)}
+.btn:focus-visible{outline:3px solid rgba(37,99,235,.35);outline-offset:2px}
+.btn.feedback{background:#fff;color:var(--accent-secondary);border:1px solid var(--accent-secondary)}
+.btn.feedback:hover{background:#E0F2FE;color:#0284C7;border-color:#0284C7;box-shadow:0 8px 16px rgba(14,165,233,.18)}
+.btn:disabled{opacity:.7;cursor:not-allowed}
+
+/* Badge & Stats */
+.badge{background:#EEF2FF;color:#1E293B;border:1px solid var(--border);border-radius:999px;padding:6px 12px;font-size:12px}
+.stats{display:flex;gap:18px;margin-top:12px}
+.stat{display:none}
+/* Mini card styling for compact info cards */
+.mini-card{padding:12px}
+.mini-card .service-header h3{font-size:1.05rem}
+.mini-card .kv{margin:6px 0}
+.mini-card .kv strong{font-size:1.05rem;color:var(--text-primary)}
+
+/* Charts row: two charts side-by-side at 50% width */
+.charts-row{display:flex;gap:18px;align-items:stretch}
+.chart-card{flex:1}
+/* Chart card alignment to match service cards */
+.chart-card .service-header{margin-bottom:8px}
+.chart-card canvas{position:relative;z-index:1;display:block;width:100%;height:auto;aspect-ratio:2/1}
+.chart-card .service-watermark{top:6px;right:10px;width:120px;height:120px}
+
+/* Footer */
+.footer{padding:18px 22px;color:var(--text-secondary)}
+/* Service card header and icon */
+.service-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.service-icon{color:var(--accent-secondary);opacity:.9}
+.service-svg{width:28px;height:28px;display:block;fill:currentColor}
+.service-watermark{position:absolute;right:12px;top:8px;width:140px;height:140px;opacity:.16;color:var(--accent-primary);z-index:0;pointer-events:none}
+.service-header, .kv, .arrival-log{position:relative;z-index:1}
+.service-watermark .service-svg{width:100%;height:100%;display:block;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Tank air pada card Tandon Air */
+.tank{position:relative;margin:8px 0 12px;border:2px solid rgba(2,6,23,0.18);border-radius:12px;height:140px;overflow:hidden;background:linear-gradient(180deg, rgba(2,6,23,0.03), rgba(2,6,23,0.06));color:var(--accent-primary)}
+.tank .water{position:absolute;left:0;right:0;bottom:0;height:0;background-color:currentColor;opacity:.28;transition:height .6s ease;background-image:repeating-linear-gradient(135deg, rgba(255,255,255,.28) 0 10px, rgba(255,255,255,.06) 10px 20px);background-size:200% 100%;animation:waveShift 6s linear infinite}
+@keyframes waveShift{from{background-position:0 0}to{background-position:80px 0}}

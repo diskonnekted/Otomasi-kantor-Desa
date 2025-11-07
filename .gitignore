@@ -1,0 +1,16 @@
+# Root ignores for the PHP dashboard and nested projects
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local data (do not publish DBs)
+data/*.db
+
+# Node artifacts in nested project
+base/node_modules/
+base/dist/
+base/.vite/
