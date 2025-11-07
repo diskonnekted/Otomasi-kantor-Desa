@@ -10,7 +10,4 @@ Thumbs.db
 # Local data (do not publish DBs)
 data/*.db
 
-# Node artifacts in nested project
-base/node_modules/
-base/dist/
-base/.vite/
+# (removed) Node artifacts in nested project 'base/' — folder no longer used
