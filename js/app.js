@@ -1,12 +1,49 @@
 (() => {
   const roomsGrid = document.getElementById('roomsGrid');
   const assets = { waterLevel: document.getElementById('waterLevel'), waterFlow: document.getElementById('waterFlow'), streetLightStatus: document.getElementById('streetLightStatus') };
+  const pir = { status: document.getElementById('pirStatus'), last: document.getElementById('pirLast'), countTonight: document.getElementById('pirCountTonight') };
+  const pirIndicator = document.getElementById('pirIndicator');
+  const pirLog = document.getElementById('pirLog');
+  const pirCard = document.getElementById('pirCard');
+  const pirResetBtn = document.getElementById('pirResetLog');
+  const pirEvents = [];
+  let lastPirOcc = 0;
+  let lastPirEventAtMs = 0;
+  const pirDebounceMs = 30000; // 30 detik untuk mencegah hit beruntun
+
+  if (pirResetBtn) {
+    pirResetBtn.addEventListener('click', () => {
+      // Reset tampilan dan state
+      pirEvents.length = 0;
+      if (pirLog) pirLog.innerHTML = '';
+      if (pir.countTonight) pir.countTonight.textContent = '0';
+      if (pir.last) pir.last.textContent = '-';
+      if (pirIndicator) {
+        pirIndicator.classList.remove('on');
+        pirIndicator.classList.add('off');
+      }
+      if (pirCard) pirCard.classList.remove('alert');
+      lastPirOcc = 0;
+      lastPirEventAtMs = 0;
+    });
+  }
   const stats = { totalPower: document.getElementById('totalPower'), avgTemp: document.getElementById('avgTemp'), activeOccupancy: document.getElementById('activeOccupancy') };
   const connectionStatus = document.getElementById('connectionStatus');
   const simulateToggle = document.getElementById('simulateToggle');
   const queueNumber = document.getElementById('queueNumber');
   const feedbackScore = document.getElementById('feedbackScore');
   const arrivalCountEl = document.getElementById('arrivalCount');
+  // Elemen pemantauan lingkungan kantor
+  const envAvgTempEl = document.getElementById('envAvgTemp');
+  const envAvgHumidityEl = document.getElementById('envAvgHumidity');
+  const envAvgLightEl = document.getElementById('envAvgLight');
+  const envHotRoomsCountEl = document.getElementById('envHotRoomsCount');
+  const envLowLightCountEl = document.getElementById('envLowLightCount');
+  const envLastUpdateEl = document.getElementById('envLastUpdate');
+  // Elemen cuaca & LDR
+  const weatherStatusEl = document.getElementById('weatherStatus');
+  const lightStatusEl = document.getElementById('lightStatus');
+  const weatherCardEl = document.getElementById('weatherCard');
   // Elemen card pelayanan akan dibuat dinamis; ambil referensi setelah rendering
   let pelayananIndicator;
   let pelayananArrivalStatus;
@@ -354,6 +391,53 @@
         });
       });
 
+      // Agregasi lingkungan: suhu, kelembaban, cahaya
+      {
+        const thresholds = {
+          tempHot: (window.APP_CONFIG && APP_CONFIG.thresholds && APP_CONFIG.thresholds.tempHot) || 30,
+          lightLow: (window.APP_CONFIG && APP_CONFIG.thresholds && APP_CONFIG.thresholds.lightLow) || 100,
+        };
+        const latestByRoom = data.latestByRoom || {};
+        let tempSum = 0, tempCount = 0;
+        let humSum = 0, humCount = 0;
+        let lightSum = 0, lightCount = 0;
+        let hotRooms = 0, lowLightRooms = 0;
+        Object.values(latestByRoom).forEach(r => {
+          const t = typeof r.temp === 'number' ? r.temp : null;
+          const h = typeof r.humidity === 'number' ? r.humidity : null;
+          const l = typeof r.light === 'number' ? r.light : null;
+          if (t !== null) { tempSum += t; tempCount += 1; if (t > thresholds.tempHot) hotRooms += 1; }
+          if (h !== null) { humSum += h; humCount += 1; }
+          if (l !== null) { lightSum += l; lightCount += 1; if (l < thresholds.lightLow) lowLightRooms += 1; }
+        });
+        if (envAvgTempEl) envAvgTempEl.textContent = tempCount ? `${(tempSum / tempCount).toFixed(1)} °C` : '- °C';
+        if (envAvgHumidityEl) envAvgHumidityEl.textContent = humCount ? `${Math.round(humSum / humCount)} %` : '- %';
+        if (envAvgLightEl) envAvgLightEl.textContent = lightCount ? `${Math.round(lightSum / lightCount)} lx` : '- lx';
+        if (envHotRoomsCountEl) envHotRoomsCountEl.textContent = String(hotRooms);
+        if (envLowLightCountEl) envLowLightCountEl.textContent = String(lowLightRooms);
+        // Status cuaca & terang/gelap (LDR)
+        const avgLight = lightCount ? (lightSum / lightCount) : null;
+        const avgHum = humCount ? (humSum / humCount) : null;
+        const isDark = (lowLightRooms > 0) || (avgLight != null && avgLight < thresholds.lightLow);
+        if (lightStatusEl) lightStatusEl.textContent = isDark ? 'Gelap (LDR)' : 'Terang (LDR)';
+        let isRaining = (typeof data.assets?.rain === 'boolean') ? !!data.assets.rain : null;
+        if (isRaining == null && window.APP_CONFIG && APP_CONFIG.simulate) {
+          // Heuristik simulasi: kelembaban tinggi dan gelap => hujan
+          isRaining = (avgHum != null ? avgHum > 75 : false) && isDark;
+        }
+        if (weatherStatusEl) weatherStatusEl.textContent = isRaining ? 'Hujan' : 'Cerah';
+        if (weatherCardEl) {
+          weatherCardEl.classList.toggle('weather-rain', !!isRaining);
+          weatherCardEl.classList.toggle('weather-clear', !isRaining);
+        }
+        if (envLastUpdateEl) {
+          const now = new Date();
+          const hh = String(now.getHours()).padStart(2, '0');
+          const mm = String(now.getMinutes()).padStart(2, '0');
+          envLastUpdateEl.textContent = `${hh}:${mm}`;
+        }
+      }
+
       // Pelayanan PIR arrival detection (rising edge)
       const pelayanan = data.latestByRoom?.['pelayanan'];
       const occ = typeof pelayanan?.occupancy === 'number' ? pelayanan.occupancy : lastPelayananOcc;
@@ -431,6 +515,42 @@
       stats.totalPower.textContent = `${data.totals?.totalPower ?? 0} W`;
       stats.avgTemp.textContent = `${data.totals?.avgTemp?.toFixed?.(2) ?? '-'} °C`;
       stats.activeOccupancy.textContent = `${data.totals?.activeOccupancy ?? 0} ruang`;
+
+      // Update PIR status (aktif hanya malam 23:00–06:00)
+      {
+        const h = new Date().getHours();
+        const active = (h >= 23 || h < 6);
+        if (pir.status) pir.status.textContent = active ? 'Aktif (23:00–06:00)' : 'Nonaktif';
+        // Jika backend menyediakan data keamanan
+        const sec = data.security || {};
+        if (pir.last && sec.pirLast) pir.last.textContent = sec.pirLast;
+        if (pir.countTonight) pir.countTonight.textContent = `${typeof sec.pirCountTonight === 'number' ? sec.pirCountTonight : 0}`;
+
+        // Deteksi malam: jika ada okupansi aktif saat sensor aktif, anggap kejadian mencurigakan
+        const suspicious = active && ((data.totals?.activeOccupancy ?? 0) > 0);
+        if (pirIndicator) {
+          pirIndicator.classList.toggle('on', suspicious);
+          pirIndicator.classList.toggle('off', !suspicious);
+        }
+        if (pirCard) {
+          pirCard.classList.toggle('alert', suspicious);
+        }
+        if (suspicious) {
+          const nowMs = Date.now();
+          if (nowMs - lastPirEventAtMs > pirDebounceMs) {
+            const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (pir.last) pir.last.textContent = ts;
+            const current = Number((pir.countTonight?.textContent || '0')) || 0;
+            const next = current + 1;
+            if (pir.countTonight) pir.countTonight.textContent = `${next}`;
+            pirEvents.unshift(ts);
+            if (pirEvents.length > 5) pirEvents.pop();
+            if (pirLog) pirLog.innerHTML = pirEvents.map(t => `<li>${t}</li>`).join('');
+            lastPirEventAtMs = nowMs;
+          }
+        }
+        lastPirOcc = suspicious ? 1 : 0;
+      }
 
       // Update assets
       assets.waterLevel.textContent = `${data.assets?.waterLevel ?? '-'} %`;

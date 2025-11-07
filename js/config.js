@@ -1,5 +1,5 @@
 window.APP_CONFIG = {
-  simulate: true,
+  simulate: false,
   sseEnabled: false,
   pollIntervalMs: 30000,
   rooms: [

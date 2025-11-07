@@ -64,80 +64,162 @@
         </div>
       </div>
       <div class="stats">
-        <div class="card mini-card blue">
+        <div class="card mini-card green">
           <div class="service-header"><h3>Total Daya</h3></div>
           <div class="kv"><span>Sekarang</span><strong id="totalPower">0 W</strong></div>
         </div>
-        <div class="card mini-card blue">
+        <div class="card mini-card amber">
           <div class="service-header"><h3>Rata-rata Suhu</h3></div>
           <div class="kv"><span>Rata-rata</span><strong id="avgTemp">- °C</strong></div>
         </div>
-        <div class="card mini-card blue">
+        <div class="card mini-card violet">
           <div class="service-header"><h3>Okupansi Aktif</h3></div>
           <div class="kv"><span>Aktif</span><strong id="activeOccupancy">0 ruang</strong></div>
         </div>
-        <div class="card mini-card blue">
+        <div class="card mini-card sky">
           <div class="service-header"><h3>Jumlah Tamu Datang</h3></div>
           <div class="kv"><span>Hari Ini</span><strong id="arrivalCount">0</strong></div>
         </div>
       </div>
     </section>
 
+    <div class="section-row">
     <section>
       <h2>Pemantauan Aset & Utilitas Desa</h2>
-      <div class="grid" id="assetsGrid">
+      <div class="col-cards" id="assetsGrid">
         <!-- Tandon dan Lampu Jalan -->
-        <div class="card">
-          <h3>Tandon Air Desa</h3>
+        <div class="card green">
+          <div class="service-header"><h3>Tandon Air Desa</h3></div>
           <div class="kv"><span>Level Air</span><strong id="waterLevel">- %</strong></div>
           <div class="kv"><span>Debit Air</span><strong id="waterFlow">- L/min</strong></div>
           <div class="actions">
             <button class="btn" data-device-key="pamsimas_pump" data-action="toggle">Pompa: OFF</button>
           </div>
+          <div class="service-watermark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" class="service-svg">
+              <!-- Ikon tandon air (outline monokrom) -->
+              <rect x="14" y="12" width="36" height="28" rx="4"></rect>
+              <line x1="18" y1="20" x2="46" y2="20"></line>
+              <line x1="18" y1="26" x2="46" y2="26"></line>
+              <path d="M18 40 C24 36, 40 36, 46 40" />
+            </svg>
+          </div>
         </div>
-        <div class="card">
-          <h3>Penerangan Jalan</h3>
+        <div class="card green">
+          <div class="service-header"><h3>Penerangan Jalan</h3></div>
           <div class="kv"><span>Status</span><strong id="streetLightStatus">-</strong></div>
           <div class="actions">
             <button class="btn" data-device-key="street_main" data-action="toggle">Lampu Jalan: OFF</button>
           </div>
+          <div class="service-watermark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" class="service-svg">
+              <!-- Ikon lampu jalan (outline monokrom) -->
+              <line x1="20" y1="12" x2="20" y2="44"></line>
+              <path d="M20 16 C30 16, 38 18, 44 22" />
+              <circle cx="44" cy="22" r="5"></circle>
+              <line x1="44" y1="27" x2="44" y2="36"></line>
+            </svg>
+          </div>
         </div>
       </div>
     </section>
 
     <section>
-      <h2>Layanan & Transparansi Publik</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>Sistem Antrean</h3>
-          <div class="kv"><span>No. Antrean Saat Ini</span><strong id="queueNumber">0</strong></div>
-          <div class="actions">
-            <button class="btn" id="queueNext">Ambil Nomor</button>
+      <h2>Pemantauan Lingkungan Kantor</h2>
+      <div class="col-cards">
+        <div class="card amber">
+          <div class="service-header"><h3>Kualitas Udara Kantor</h3></div>
+          <div class="kv"><span>Suhu Rata-rata</span><strong id="envAvgTemp">- °C</strong></div>
+          <div class="kv"><span>Kelembaban Rata-rata</span><strong id="envAvgHumidity">- %</strong></div>
+          <div class="kv"><span>Ruang > 30 °C</span><strong id="envHotRoomsCount">0</strong></div>
+          <div class="service-watermark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" class="service-svg">
+              <!-- Ikon kualitas udara: termometer dan tetesan -->
+              <rect x="14" y="14" width="14" height="28" rx="3"></rect>
+              <circle cx="21" cy="22" r="3"></circle>
+              <path d="M40 20 C36 26, 36 34, 40 40 C44 34, 44 26, 40 20" />
+            </svg>
           </div>
         </div>
-        <div class="card">
-          <h3>Umpan Balik Layanan</h3>
-          <div class="actions">
-            <button class="btn feedback" data-score="3">Sangat Puas</button>
-            <button class="btn feedback" data-score="2">Puas</button>
-            <button class="btn feedback" data-score="1">Kurang Puas</button>
+        <div class="card amber" id="weatherCard">
+          <div class="service-header"><h3>Kondisi Cuaca & Pencahayaan</h3></div>
+          <div class="kv"><span>Cuaca</span><strong id="weatherStatus">-</strong></div>
+          <div class="kv"><span>Pencahayaan (LDR)</span><strong id="lightStatus">-</strong></div>
+          <div class="kv"><span>Pembaruan Terakhir</span><strong id="envLastUpdate">-</strong></div>
+          <div class="service-watermark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" class="service-svg">
+              <!-- Animasi matahari dan awan/hujan, tampil sesuai kelas pada card -->
+              <g class="icon sun">
+                <circle cx="48" cy="16" r="6" fill="none" stroke="currentColor" />
+                <!-- Rays -->
+                <line x1="48" y1="4" x2="48" y2="10" class="ray"></line>
+                <line x1="48" y1="22" x2="48" y2="28" class="ray"></line>
+                <line x1="36" y1="16" x2="42" y2="16" class="ray"></line>
+                <line x1="54" y1="16" x2="60" y2="16" class="ray"></line>
+                <line x1="41" y1="9" x2="44" y2="12" class="ray"></line>
+                <line x1="52" y1="20" x2="55" y2="23" class="ray"></line>
+                <line x1="41" y1="23" x2="44" y2="20" class="ray"></line>
+                <line x1="52" y1="12" x2="55" y2="9" class="ray"></line>
+              </g>
+              <g class="icon cloud">
+                <path d="M16 30 C14 24, 20 22, 24 24 C26 20, 34 22, 34 26 C40 26, 42 30, 38 32 L20 32 C18 32, 16 32, 16 30 Z" fill="none" stroke="currentColor" />
+              </g>
+              <g class="icon rain">
+                <line x1="22" y1="34" x2="22" y2="42" class="drop d1"></line>
+                <line x1="28" y1="34" x2="28" y2="42" class="drop d2"></line>
+                <line x1="34" y1="34" x2="34" y2="42" class="drop d3"></line>
+              </g>
+            </svg>
           </div>
-          <div class="kv"><span>Skor Hari Ini</span><strong id="feedbackScore">-</strong></div>
         </div>
       </div>
     </section>
 
     <section>
-      <h2>Keamanan & Pemantauan Lingkungan</h2>
-      <div class="grid">
-        <div class="card">
-          <h3>Ruang Arsip / Server</h3>
+      <h2>Keamanan Kantor</h2>
+      <div class="col-cards">
+        <div class="card violet">
+          <div class="service-header"><h3>Ruang Arsip / Server</h3></div>
           <div class="kv"><span>Pintu</span><strong id="doorStatus">Tertutup</strong></div>
           <div class="kv"><span>Asap/Api</span><strong id="smokeStatus">Normal</strong></div>
           <div class="kv"><span>Suhu</span><strong id="serverTemp">- °C</strong></div>
+          <div class="service-watermark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" class="service-svg">
+              <!-- Ikon server rak monokrom -->
+              <rect x="14" y="14" width="36" height="10" rx="2"></rect>
+              <rect x="14" y="28" width="36" height="10" rx="2"></rect>
+              <rect x="14" y="42" width="36" height="10" rx="2"></rect>
+              <circle cx="20" cy="19" r="1.5"></circle>
+              <circle cx="26" cy="19" r="1.5"></circle>
+              <circle cx="32" cy="19" r="1.5"></circle>
+            </svg>
+          </div>
+        </div>
+        <div class="card violet" id="pirCard">
+          <div class="service-header"><h3>Aktivitas Mencurigakan</h3></div>
+          <div class="kv"><span>Status Sensor</span><strong><span id="pirIndicator" class="indicator off"></span><span id="pirStatus">Nonaktif</span></strong></div>
+          <div class="kv"><span>Terakhir Terdeteksi</span><strong id="pirLast">-</strong></div>
+          <div class="kv"><span>Deteksi Malam Ini</span><strong id="pirCountTonight">0</strong></div>
+          <div class="arrival-log">
+            <div class="log-title">Log Deteksi (malam)
+              <button class="btn small" id="pirResetLog" title="Reset log deteksi malam">Reset</button>
+            </div>
+            <ul id="pirLog"></ul>
+          </div>
+          <div class="service-watermark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" class="service-svg">
+              <!-- Ikon PIR: siluet orang dan gelombang deteksi -->
+              <circle cx="32" cy="20" r="5"></circle>
+              <rect x="28" y="26" width="8" height="10" rx="2"></rect>
+              <path d="M12 36 Q20 34 28 36" />
+              <path d="M36 18 Q46 22 52 28" />
+              <path d="M36 24 Q46 28 52 34" />
+            </svg>
+          </div>
         </div>
       </div>
     </section>
+    </div>
   </main>
 
   <footer class="footer">
